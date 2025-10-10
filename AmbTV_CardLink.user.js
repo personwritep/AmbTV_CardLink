@@ -48,7 +48,7 @@ function movie_page(){
 
 
 function start(){
-    let help_url='https://ameblo.jp/personwritep/entry-12810297619.html';
+    let help_url='https://ameblo.jp/personwritep/entry-12937715892.html';
 
     let help_svg=
         '<svg width="40" height="20" style="vertical-align: -6px;" '+
@@ -178,4 +178,3 @@ function main(){
                 tr_panel.style.display='none'; }}}
 
 } // main()
-
