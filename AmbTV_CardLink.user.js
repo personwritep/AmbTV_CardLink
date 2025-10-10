@@ -4,14 +4,19 @@
 // @version        0.1
 // @description        AbemaTV の動画ページのリンクカードを生成する
 // @author        AbemaTV User
-// @match        https://abema.tv/video/*
-// @match        https://abema.tv/channels/*
-// @match        https://abema.tv/feature/*
+// @match        https://abema.tv/*
 // @icon        https://www.google.com/s2/favicons?sz=64&domain=abema.tv
 // @grant        none
 // @updateURL        https://github.com/personwritep/AmbTV_CardLink/raw/main/AmbTV_CardLink.user.js
 // @downloadURL        https://github.com/personwritep/AmbTV_CardLink/raw/main/AmbTV_CardLink.user.js
 // ==/UserScript==
+
+
+let delete_active=0;
+setTimeout(()=>{
+    delete_active=1; // リロード後2secで有効になる
+}, 2000);
+
 
 
 let target0=document.querySelector('head title'); // 監視 target
@@ -23,14 +28,8 @@ movie_page();
 function movie_page(){
     let tr_panel=document.querySelector('#tr_panel');
     if(tr_panel){
-        tr_panel.style.display='none'; }
-
-
-    if(location.search=='?avc'){
-        history.replaceState(null, '', window.location.pathname);
-        setTimeout(()=>{
-            start();
-        }, 800); }
+        if(delete_active==1){
+        tr_panel.style.display='none'; }} // コンテンツ変更でパネルを消す
 
 
     let nav=document.querySelector('.com-application-Header__logo');
@@ -42,6 +41,13 @@ function movie_page(){
                 if(path.includes('/video/') || path.includes('/channels/') || path.includes('/feature/')){
                     let goto='https://abema.tv' + path +'?avc';
                     location.href=goto; }}}}
+
+
+    if(location.search=='?avc'){
+        history.replaceState(null, '', window.location.pathname);
+        setTimeout(()=>{
+            start();
+        }, 200); }
 
 } // movie_page()
 
