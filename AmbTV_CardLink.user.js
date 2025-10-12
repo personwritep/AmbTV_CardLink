@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV CardLink
 // @namespace        http://tampermonkey.net/
-// @version        0.2
+// @version        0.3
 // @description        AbemaTV の動画ページのリンクカードを生成する
 // @author        AbemaTV User
 // @match        https://abema.tv/*
@@ -12,10 +12,15 @@
 // ==/UserScript==
 
 
-let dark=sessionStorage.getItem('ATV_Card'); // カードデザインのダークモード
+let dark=sessionStorage.getItem('ATV_Card_d'); // カードデザインのダークモード
 if(!dark){
     dark=0; }
-sessionStorage.setItem('ATV_Card', dark);
+sessionStorage.setItem('ATV_Card_d', dark);
+
+let ratio=sessionStorage.getItem('ATV_Card_r'); // カードのサムネイル縦横比
+if(!ratio){
+    ratio=0; }
+sessionStorage.setItem('ATV_Card_r', ratio);
 
 
 let delete_active=0;
@@ -82,24 +87,38 @@ function start(){
         '<rect width="600" height="600" x="100" y="100" fill="#000" '+
         'stroke-width="20" stroke="#000" /></svg>';
 
+    let tm0_svg=
+        '<svg class="tm0" viewBox="0 0 200 80" width="50" height="20">'+
+        '<rect width="180" height="60" x="10" y="10" fill="none" stroke-width="2" stroke="#000" />'+
+        '<rect width="60" height="60" x="130" y="10" fill="#61afaf" stroke-width="2" stroke="#000" />'+
+        '</svg>';
+
+    let tm1_svg=
+        '<svg class="tm1" viewBox="0 0 200 80" width="50" height="20">'+
+        '<rect width="180" height="60" x="10" y="10" fill="none" stroke-width="2" stroke="#000" />'+
+        '<rect width="80" height="60" x="110" y="10" fill="#61afaf" stroke-width="2" stroke="#000" />'+
+        '</svg>';
+
     let panel=
         '<li>'+
         '<div id="tr_panel">'+
         '<a href="'+ help_url + '" rel="noopener noreferrer" target="_blank">'+ help_svg +'</a>'+
         '<button id="tr_test" class="color_sw">Test</button>'+
         '<button id="tr_dark" class="color_sw">'+ sq0_svg + sq1_svg +'</button>'+
+        '<button id="tr_thum" class="color_sw">'+ tm0_svg + tm1_svg +'</button>'+
         '<button id="tr_copy" class="color_sw">Copy</button>'+
         '<button id="tr_close" class="color_sw">✖</button>'+
         '</div>'+
-        '<style>#tr_panel { position: fixed; top: 0; left: 200px; z-index: 20; '+
+        '<style>#tr_panel { position: fixed; top: 0; left: 200px; z-index: 200; '+
         'font: normal 16px/24px Meiryo; padding: 14px 20px 12px 0; '+
         'background: #fff; border: 1px solid #aaa; align-items: center; } '+
         '#tr_panel .color_sw { margin-left: 15px; padding: 2px 8px 0; height: 32px; '+
         'border: 1px solid #aaa; background: linear-gradient(transparent, #ffe082); } '+
         '#tr_panel .color_sw:hover { background: linear-gradient(#ffe082, transparent); } '+
         '#tr_panel a { margin-right: -10px; } '+
-        '#tr_dark { padding: 5px 0 0 !important; vertical-align: -4px; } '+
+        '#tr_dark, #tr_thum { padding: 5px 0 0 !important; vertical-align: -4px; } '+
         'svg.sq1 { display: none; } '+
+        'svg.tm1 { display: none; } '+
         '</style>'+
         '</li>';
 
@@ -118,6 +137,7 @@ function start(){
 function main(){
     test();
     set_color();
+    set_thum();
     copy();
     close();
 
@@ -153,7 +173,33 @@ function main(){
                     sq0.style.display='inline-block';
                     sq1.style.display='none'; }
 
-                sessionStorage.setItem('ATV_Card', dark); }}}
+                sessionStorage.setItem('ATV_Card_d', dark); }}}
+
+
+
+    function set_thum(){
+        let tr_thum=document.querySelector('#tr_thum');
+        let tm0=document.querySelector('svg.tm0');
+        let tm1=document.querySelector('svg.tm1');
+        if(tr_thum && tm0 && tm1){
+            if(ratio==0){
+                tm0.style.display='inline-block';
+                tm1.style.display='none'; }
+            else{
+                tm0.style.display='none';
+                tm1.style.display='inline-block'; }
+
+            tr_thum.onclick=()=>{
+                if(ratio==0){
+                    ratio=1;
+                    tm0.style.display='none';
+                    tm1.style.display='inline-block'; }
+                else{
+                    ratio=0;
+                    tm0.style.display='inline-block';
+                    tm1.style.display='none'; }
+
+                sessionStorage.setItem('ATV_Card_r', ratio); }}}
 
 
 
@@ -193,7 +239,7 @@ function main(){
             'height: 120px; border: 1px solid ';
 
         if(dark==0){
-            card_html +='#e2e2e2; border-radius: 4px; background-color: #fff; '+
+            card_html +='#bbb; border-radius: 4px; background-color: #fff; '+
                 'text-decoration: none" target="_blank">'; }
         else{
             card_html +='#0080ba; border-radius: 4px; background-color: #000; '+
@@ -222,7 +268,7 @@ function main(){
 
         card_html +=video_overview +'</span>'+
             '<span class="ogpCard_url" style="display: flex; align-items: center; '+
-            'margin: auto 0 0 20px; padding-top: 3px;">'+
+            'margin: auto -15px 0 15px; padding-top: 3px;">'+
             '<span class="ogpCard_iconWrap" style="width: 20px; height: 20px; flex-shrink: 0">'+
             '<img src="https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON'+
             '&fallback_opts=TYPE,SIZE,URL&url=https://abema.tv&size=16" '+
@@ -236,8 +282,14 @@ function main(){
             card_html +='<span style="color:#ff0000;">abema.tv</span>'; }
 
         card_html +='</span></span></span>'+
-            '<span class="ogpCard_imageWrap" style="position: relative; width: 120px; '+
-            'height: 120px; flex-shrink: 0; right: -2px;">'+
+            '<span class="ogpCard_imageWrap" style="position: relative; ';
+
+        if(ratio==0){
+            card_html +='width: 120px; '; }
+        else{
+            card_html +='width: 215px; '; }
+
+        card_html +='height: 120px; flex-shrink: 0; right: -2px;">'+
             '<img alt="card image" class="ogpCard_image" '+
             'data-ogp-card-image="" height="120" loading="lazy" src="'+ video_img_src +
             '" style="position: absolute; top: 50%; left: 50%; object-fit: cover; height: 100%; '+
@@ -258,3 +310,4 @@ function main(){
                 tr_panel.style.display='none'; }}}
 
 } // main()
+
