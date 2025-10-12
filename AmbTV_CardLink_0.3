@@ -50,12 +50,15 @@ function movie_page(){
                 event.preventDefault();
                 let path=location.pathname;
                 if(path.includes('/video/') || path.includes('/channels/') || path.includes('/feature/')){
-                    let goto='https://abema.tv' + path +'?avc';
-                    location.href=goto; }}}}
+                    let sync_window='https://abema.tv' + path +'#avc';
+                    window.open(sync_window, '_blank'); }}}}
 
 
-    if(location.search=='?avc'){
+    if(location.hash=='#avc'){
         history.replaceState(null, '', window.location.pathname);
+        if(window.opener){
+            window.opener.close(); }
+
         setTimeout(()=>{
             start();
         }, 200); }
@@ -142,10 +145,11 @@ function main(){
     close();
 
 
+
     function test(){
         let mov_url=document.querySelector("meta[property='og:url']").content;
         let tr_test=document.querySelector('#tr_test');
-        if(tr_test){
+        if(tr_test && mov_url){
             tr_test.onclick=()=>{
                 window.open(mov_url, '_blank'); }}}
 
@@ -310,5 +314,4 @@ function main(){
                 tr_panel.style.display='none'; }}}
 
 } // main()
-
 
