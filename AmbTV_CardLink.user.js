@@ -293,10 +293,10 @@ function main(){
         else{
             card_html +='width: 215px; '; }
 
-        card_html +='height: 120px; flex-shrink: 0; right: -2px;">'+
+        card_html +='height: 120px; flex-shrink: 0;">'+
             '<img alt="card image" class="ogpCard_image" '+
             'data-ogp-card-image="" height="120" loading="lazy" src="'+ video_img_src +
-            '" style="position: absolute; top: 50%; left: 50%; object-fit: cover; height: 100%; '+
+            '" style="position: absolute; top: 50%; left: 52%; object-fit: cover; height: 100%; '+
             'width: 100%; transform: translate(-50%,-50%)" width="120"></span></a>'+
             '</article></div>';
 
