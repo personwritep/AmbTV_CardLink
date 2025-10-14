@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV CardLink
 // @namespace        http://tampermonkey.net/
-// @version        0.3
+// @version        0.4
 // @description        AbemaTV の動画ページのリンクカードを生成する
 // @author        AbemaTV User
 // @match        https://abema.tv/*
@@ -271,14 +271,21 @@ function main(){
             card_html +='color: #eee;">'; }
 
         card_html +=video_overview +'</span>'+
-            '<span class="ogpCard_url" style="display: flex; align-items: center; '+
-            'margin: auto -15px 0 15px; padding-top: 3px;">'+
+            '<span class="ogpCard_url" style="display: flex; align-items: center; ';
+
+        if(ratio==0){
+            card_html +='margin: auto 0 0 20px;">'; }
+        else{
+            card_html +='margin: auto -15px 0 15px;">'; }
+
+        card_html +=
             '<span class="ogpCard_iconWrap" style="width: 20px; height: 20px; flex-shrink: 0">'+
             '<img src="https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON'+
             '&fallback_opts=TYPE,SIZE,URL&url=https://abema.tv&size=16" '+
             'style="vertical-align: 0; margin-right: 4px; min-width: 16px;"></span>'+
-            '<span class="ogpCard_urlText" style="overflow: hidden; font-size: 13px; '+
-            'text-align: left; font-weight: bold; color: #222;">';
+            '<span class="ogpCard_urlText" style="overflow: hidden; text-overflow: ellipsis; '+
+            'white-space: nowrap; font-size: 13px; text-align: left; font-weight: bold; '+
+            'color: #222;">';
 
         if(dark==0){
             card_html +='abema.tv'; }
@@ -293,12 +300,12 @@ function main(){
         else{
             card_html +='width: 215px; '; }
 
-        card_html +='height: 120px; flex-shrink: 0;">'+
+        card_html +='height: 120px; flex-shrink: 0; overflow: hidden;">'+
             '<img alt="card image" class="ogpCard_image" '+
             'data-ogp-card-image="" height="120" loading="lazy" src="'+ video_img_src +
-            '" style="position: absolute; top: 50%; left: 52%; object-fit: cover; height: 100%; '+
-            'width: 100%; transform: translate(-50%,-50%)" width="120"></span></a>'+
-            '</article></div>';
+            '" style="position: absolute; top: 50%; left: 50%; object-fit: cover; height: 100%; '+
+            'width: 100%; transform: translate(-50%,-50%) scale(1.02);" width="120">'+
+            '</span></a></article></div>';
 
         return card_html;
 
