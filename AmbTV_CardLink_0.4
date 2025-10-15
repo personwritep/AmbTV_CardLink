@@ -301,10 +301,11 @@ function main(){
             card_html +='width: 215px; '; }
 
         card_html +='height: 120px; flex-shrink: 0; overflow: hidden;">'+
-            '<img alt="card image" class="ogpCard_image" '+
-            'data-ogp-card-image="" height="120" loading="lazy" src="'+ video_img_src +
-            '" style="position: absolute; top: 50%; left: 50%; object-fit: cover; height: 100%; '+
-            'width: 100%; transform: translate(-50%,-50%) scale(1.02);" width="120">'+
+            '<img alt="card image" class="ogpCard_image" data-ogp-card-image="" '+
+            'loading="lazy" src="'+ video_img_src + '" '+
+            'style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); '+
+            'height: 100%; max-height: 100%; width: 100%; max-width: 100%; '+
+            'object-fit: cover;">'+
             '</span></a></article></div>';
 
         return card_html;
