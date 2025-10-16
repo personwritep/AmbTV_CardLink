@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV CardLink
 // @namespace        http://tampermonkey.net/
-// @version        0.4
+// @version        0.5
 // @description        AbemaTV の動画ページのリンクカードを生成する
 // @author        AbemaTV User
 // @match        https://abema.tv/*
@@ -304,8 +304,7 @@ function main(){
             '<img alt="card image" class="ogpCard_image" data-ogp-card-image="" '+
             'loading="lazy" src="'+ video_img_src +'" '+
             'style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); '+
-            'height: 100%; min-height: 100%; width: 100%; min-width: 100%; '+
-            'object-fit: cover;">'+
+            'min-height: 101%; min-width: 101%; object-fit: cover;">'+
             '</span></a></article></div>';
 
         return card_html;
