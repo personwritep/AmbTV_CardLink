@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV CardLink
 // @namespace        http://tampermonkey.net/
-// @version        0.5
+// @version        0.6
 // @description        AbemaTV の動画ページのリンクカードを生成する
 // @author        AbemaTV User
 // @match        https://abema.tv/*
@@ -49,13 +49,29 @@ function movie_page(){
             if(!event.ctrlKey && !event.shiftKey){
                 event.preventDefault();
                 let path=location.pathname;
+                let query=location.search;
+                let add_q='';
+                if(query){
+                    add_q=query+'&avc_'; }
+                else{
+                    add_q=query+'?avc_'; }
+
                 if(path.includes('/video/') || path.includes('/channels/') || path.includes('/feature/')){
-                    let sync_window='https://abema.tv' + path +'#avc';
+                    let sync_window='https://abema.tv' + path + add_q;
                     window.open(sync_window, '_blank'); }}}}
 
 
-    if(location.hash=='#avc'){
-        history.replaceState(null, '', window.location.pathname);
+    if(location.search.includes('avc_')){
+        let url=location.href;
+        url=url.replace('?avc_', '').replace('&avc_', '');
+        history.replaceState(null, '', url);
+
+        let meta_url=document.querySelector("meta[property='og:url']").content;
+        if(meta_url){
+            meta_url=meta_url.replace('?avc_', '').replace('&avc_', '')
+                .replace('?atv_if', '').replace('&atv_if', '');
+            document.querySelector("meta[property='og:url']").content=meta_url; }
+
         if(window.opener){
             window.opener.close(); }
 
