@@ -133,12 +133,17 @@ function start(){
 
 
 function main(){
+    let mov_url=location.href;
+
+    /*
     let mov_url=document.querySelector("meta[property='og:url']").content;
+    if(mov_url.includes('atv_if')){
+          mov_url=mov_url.replace('?atv_if', '').replace('&atv_if', ''); }
     if(mov_url.includes('s=') && !mov_url.includes('?')){
         let index=mov_url.indexOf('s=');
         mov_url=mov_url.slice(0, index)+ '?' +mov_url.slice(index);
     } // '?'を追加して修復
-
+*/
 
     test();
     set_color();
