@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AmbTV CardLink
 // @namespace        http://tampermonkey.net/
-// @version        0.6
+// @version        0.7
 // @description        AbemaTV の動画ページのリンクカードを生成する
 // @author        AbemaTV User
 // @match        https://abema.tv/*
@@ -22,25 +22,29 @@ if(!ratio){
     ratio=0; }
 sessionStorage.setItem('ATV_Card_r', ratio);
 
+let reload_active=0;
 
-let delete_active=0;
-setTimeout(()=>{
-    delete_active=1; // リロード後2secで有効になる
-}, 2000);
-
-
-
-let target0=document.querySelector('head title'); // 監視 target
-let monitor0=new MutationObserver(movie_page);
-monitor0.observe(target0, {childList: true}); // 監視開始
+let target=document.querySelector('head title'); // 監視 target
+let monitor=new MutationObserver(movie_page);
+monitor.observe(target, {childList: true}); // 監視開始
 
 movie_page();
 
+
+
 function movie_page(){
-    let tr_panel=document.querySelector('#tr_panel');
-    if(tr_panel){
-        if(delete_active==1){
-            tr_panel.style.display='none'; }} // コンテンツ変更でパネルを消す
+    reload_active=sessionStorage.getItem('ATV_Card_active');
+    if(reload_active==1){
+        setTimeout(()=>{
+            start();
+        }, 200);
+        setTimeout(()=>{
+            sessionStorage.setItem('ATV_Card_active', 0); // リロード直後 1回だけパネル表示
+        }, 2000); }
+    else{
+        let tr_panel=document.querySelector('#tr_panel');
+        if(tr_panel){
+            tr_panel.style.display='none'; }} // 初期状態やコンテンツ変更時はパネルを消す
 
 
     let nav=document.querySelector('.com-application-Header__logo');
@@ -49,35 +53,9 @@ function movie_page(){
             if(!event.ctrlKey && !event.shiftKey){
                 event.preventDefault();
                 let path=location.pathname;
-                let query=location.search;
-                let add_q='';
-                if(query){
-                    add_q=query+'&avc_'; }
-                else{
-                    add_q=query+'?avc_'; }
-
                 if(path.includes('/video/') || path.includes('/channels/') || path.includes('/feature/')){
-                    let sync_window='https://abema.tv' + path + add_q;
-                    window.open(sync_window, '_blank'); }}}}
-
-
-    if(location.search.includes('avc_')){
-        let url=location.href;
-        url=url.replace('?avc_', '').replace('&avc_', '');
-        history.replaceState(null, '', url);
-
-        let meta_url=document.querySelector("meta[property='og:url']").content;
-        if(meta_url){
-            meta_url=meta_url.replace('?avc_', '').replace('&avc_', '')
-                .replace('?atv_if', '').replace('&atv_if', '');
-            document.querySelector("meta[property='og:url']").content=meta_url; }
-
-        if(window.opener){
-            window.opener.close(); }
-
-        setTimeout(()=>{
-            start();
-        }, 200); }
+                    sessionStorage.setItem('ATV_Card_active', 1); // ATV_Card_active'をセットしてリロード
+                    location.reload(); }}}}
 
 } // movie_page()
 
@@ -147,6 +125,7 @@ function start(){
 
     let tr_panel=document.querySelector('#tr_panel');
     if(tr_panel){
+        sessionStorage.setItem('ATV_Card_d', dark);
         main(); }
 
 } // start()
@@ -154,6 +133,13 @@ function start(){
 
 
 function main(){
+    let mov_url=document.querySelector("meta[property='og:url']").content;
+    if(mov_url.includes('s=') && !mov_url.includes('?')){
+        let index=mov_url.indexOf('s=');
+        mov_url=mov_url.slice(0, index)+ '?' +mov_url.slice(index);
+    } // '?'を追加して修復
+
+
     test();
     set_color();
     set_thum();
@@ -161,12 +147,11 @@ function main(){
     close();
 
 
-
     function test(){
-        let mov_url=document.querySelector("meta[property='og:url']").content;
         let tr_test=document.querySelector('#tr_test');
         if(tr_test && mov_url){
             tr_test.onclick=()=>{
+                sessionStorage.setItem('ATV_Card_active', 0);
                 window.open(mov_url, '_blank'); }}}
 
 
@@ -191,9 +176,9 @@ function main(){
                 else{
                     dark=0;
                     sq0.style.display='inline-block';
-                    sq1.style.display='none'; }
+                    sq1.style.display='none'; }}}
 
-                sessionStorage.setItem('ATV_Card_d', dark); }}}
+    } // set_color()
 
 
 
@@ -217,9 +202,9 @@ function main(){
                 else{
                     ratio=0;
                     tm0.style.display='inline-block';
-                    tm1.style.display='none'; }
+                    tm1.style.display='none'; }}}
 
-                sessionStorage.setItem('ATV_Card_r', ratio); }}}
+    } // set_thum()
 
 
 
@@ -234,12 +219,13 @@ function main(){
 
                     tr_copy.textContent='copied';
                     setTimeout(()=>{
-                        tr_copy.textContent='Copy'; }, 1000); }}}}
+                        tr_copy.textContent='Copy'; }, 1000); }}}
+
+    } // copy()
 
 
 
     function creat_card(){
-        let mov_url=document.querySelector("meta[property='og:url']").content;
         let video_title='動画タイトル';
         let video_overview='動画説明';
         let video_img_src;
@@ -334,6 +320,7 @@ function main(){
         let tr_close=document.querySelector('#tr_close');
         if(tr_panel && tr_close){
             tr_close.onclick=()=>{
+                sessionStorage.setItem('ATV_Card_active', 0);
                 tr_panel.style.display='none'; }}}
 
 } // main()
